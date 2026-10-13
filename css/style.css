@@ -2148,30 +2148,278 @@ body.about-screen-active .character-viewport {
 
 
 
-/* Portfolio customization: small-screen fallback.
-   The original composition was designed primarily for desktop; these overrides
-   prevent the blocking warning and keep core navigation reachable on smaller screens. */
-@media (max-width: 1023px) {
-  .mobile-warning { display: none !important; }
-  .p3r-main { min-height: 100svh; height: 100svh; }
-  .menu-profile-header { top: 1.2rem; left: 1rem; transform: scale(.72); transform-origin: top left; }
-  .menu-column { left: 1rem; top: 54%; max-width: calc(100vw - 1rem); transform: translateY(-50%) scale(.72); transform-origin: left center; }
-  .hud-controls { right: 1rem; bottom: 1rem; transform: scale(.8); transform-origin: bottom right; }
-  .side-number { display: none; }
-  .slink-viewport { padding: 1rem 0 4rem; overflow-y: auto; }
-  .slink-left-column { max-width: 100vw; width: 100%; }
-  .slink-profile-header { margin-left: 1rem; }
-  .p3r-about-card { width: calc(100vw - 2rem); max-width: 720px; margin: 1rem; padding: 1.25rem; }
-  .p3r-about-left-column { max-width: 100vw; }
-  .p3r-about-top-row { flex-wrap: wrap; }
-  .p3r-mail-phone-wrap { transform: scale(.78); transform-origin: top center; }
+/* ==========================================================================
+   MOBILE / PHONE & TABLET COMPATIBILITY
+   Tetap mempertahankan tampilan desktop; semua aturan di bawah hanya aktif
+   pada layar <= 1023px (atau perangkat sentuh tanpa hover).
+   ========================================================================== */
+
+/* --- Perangkat sentuh: tanpa efek hover yang "menyangkut" & tap highlight --- */
+@media (hover: none) {
+  html, body, button, a, .slink-card, .p3r-skill-tab, .p3r-mail-row, .option-hitbox {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button, a, .slink-card, .p3r-skill-tab, .p3r-mail-row, .option-hitbox {
+    touch-action: manipulation;
+  }
+  .slink-card:hover:not(.active) { transform: skewX(var(--card-skew)) translateX(0); filter: none; }
+  .p3r-skill-tab:hover:not(.active) {
+    background: rgba(2, 11, 24, 0.88);
+    border-color: rgba(22, 207, 251, 0.45);
+    transform: skewX(-14deg);
+    box-shadow: none;
+  }
+  .p3r-stat-row:hover {
+    background: rgba(2, 9, 20, 0.82);
+    border-left-color: #16cffb;
+    transform: skewX(-14deg);
+    box-shadow: none;
+  }
+  .modal-info-card:hover { transform: none; }
+  .slink-hud-btn:hover { transform: none; }
 }
+
+@media (max-width: 1023px) {
+  /* Peringatan layar kecil dimatikan, situs tetap bisa dipakai di HP */
+  .mobile-warning { display: none !important; }
+
+  /* Tinggi viewport dinamis (mengatasi address bar mobile browser) */
+  html, body { height: 100%; overscroll-behavior: none; }
+  .p3r-main { width: 100%; height: 100vh; height: 100dvh; min-height: 0; }
+
+  /* ---------- Background video: potret = isi layar penuh (cover) ---------- */
+  .slink-video-container { width: 100%; height: 100%; }
+
+  /* ---------- Loading screen ---------- */
+  .p3r-loading-screen { padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
+  .loading-hud-bottom { min-width: 0; width: 100%; max-width: 100%; }
+  .loading-title { font-size: 2rem; }
+  .loading-percent { font-size: 1.7rem; min-width: 3.6rem; }
+  .loading-bar-wrap { gap: .75rem; }
+
+  /* ---------- Menu utama ---------- */
+  .menu-profile-header {
+    top: calc(.9rem + env(safe-area-inset-top, 0px));
+    right: 1rem;
+    left: auto;
+    transform: translateX(100px) skewX(-10deg); /* posisi awal animasi; animasi tetap berjalan */
+  }
+  .profile-name-text { font-size: clamp(1.5rem, 6.5vw, 2.2rem); }
+  .profile-accent-line { width: clamp(130px, 38vw, 220px); height: 3px; margin-top: .4rem; }
+
+  .menu-column {
+    left: .75rem;
+    top: 56%;
+    max-width: calc(100vw - 1rem);
+    transform: translateY(-50%) scale(.68);
+    transform-origin: left center;
+  }
+  .side-number { display: none; }
+
+  .hud-controls {
+    right: .9rem;
+    bottom: calc(.9rem + env(safe-area-inset-bottom, 0px));
+    transform: scale(.85);
+    transform-origin: bottom right;
+  }
+  .control-key { min-width: 1.6rem; height: 1.4rem; }
+  .control-text { font-size: 1rem; }
+
+  /* ---------- Layar S.Link / Project / Skills / About ---------- */
+  .slink-viewport {
+    padding: calc(.8rem + env(safe-area-inset-top, 0px)) 0 calc(5rem + env(safe-area-inset-bottom, 0px)) 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    pointer-events: auto;              /* agar bisa di-scroll dengan sentuhan */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+  .slink-left-column { max-width: 100%; width: 100%; }
+
+  .slink-profile-header { margin-left: 5vw; margin-top: .6rem; margin-bottom: 1.2rem; }
+  .slink-profile-name { font-size: .85rem; letter-spacing: .16em; }
+
+  .p3r-geometric-header {
+    width: min(88vw, 440px);
+    height: 78px;
+    margin-bottom: 20px;
+  }
+  .p3r-banner-title {
+    margin-left: 6vw;
+    font-size: clamp(2.4rem, 11.5vw, 3.6rem);
+    padding-top: 6px;
+  }
+
+  /* Kartu project */
+  .slink-cards-container {
+    margin-left: 4vw;
+    --card-height: 66px;
+    --card-gap: 10px;
+    width: auto;
+    max-width: 96vw;
+  }
+  .slink-card {
+    width: 86vw;
+    margin-left: 0;
+  }
+  .slink-card.active {
+    width: 88vw !important;
+    transform: skewX(var(--card-skew)) translateX(6px) !important;
+  }
+  .card-numeral-box { width: 50px; }
+  .card-numeral-text { font-size: 1.25rem; }
+  .card-main-body { padding: 0 1rem 0 .85rem; }
+  .card-title-text { font-size: 1.02rem; }
+  .card-subtitle-text { font-size: .72rem; margin-top: 2px; }
+  .card-red-accent { width: 18px; }
+
+  .slink-bottom-hud {
+    right: 1rem;
+    bottom: calc(.9rem + env(safe-area-inset-bottom, 0px));
+    transform: scale(.9);
+    transform-origin: bottom right;
+  }
+
+  /* Skills */
+  .p3r-skill-left-column { max-width: 100%; }
+  .p3r-skill-tabs { margin-left: 4vw; margin-right: 4vw; gap: 8px; margin-bottom: 14px; }
+  .p3r-skill-tab { padding: 6px 12px; gap: 6px; }
+  .p3r-tab-tag { font-size: .72rem; }
+  .p3r-tab-label { font-size: .8rem; letter-spacing: .03em; }
+  .p3r-skills-container {
+    margin-left: 4vw;
+    width: 92vw;
+    max-height: none;            /* scroll ditangani oleh .slink-viewport */
+    overflow: visible;
+    padding-right: 12px;
+    padding-bottom: 20px;
+  }
+  .p3r-skill-rows-list { gap: 9px; }
+  .p3r-stat-row { gap: 12px; padding: 8px 12px; }
+  .p3r-stat-name-col { width: 36vw; }
+  .p3r-stat-name { font-size: .88rem; }
+  .p3r-stat-bar-track { height: 16px; }
+
+  /* About */
+  .p3r-about-left-column { max-width: 100%; }
+  .p3r-about-card {
+    width: 92vw;
+    max-width: 720px;
+    margin: 0 auto 0 4vw;
+    padding: 1.25rem 1.1rem;
+    gap: 16px;
+  }
+  .p3r-about-card-inner { gap: 14px; }
+  .p3r-about-top-row { gap: 16px; }
+  .p3r-photo-box { width: 88px; height: 88px; }
+  .p3r-about-name { font-size: clamp(1.4rem, 6vw, 1.9rem); }
+  .p3r-about-title { font-size: .9rem; }
+  .p3r-about-p { font-size: .9rem; }
+  .p3r-about-quote { padding: 12px 14px; gap: 10px; }
+  .p3r-quote-text { font-size: .85rem; }
+
+  /* Contact (MAIL) */
+  :root { --mail-skew: -8deg; --mail-rot: -1deg; }
+  .p3r-contact-viewport {
+    width: 100%;
+    height: 100%;
+    padding: calc(.8rem + env(safe-area-inset-top, 0px)) 0 calc(4rem + env(safe-area-inset-bottom, 0px)) 0;
+    justify-content: center;
+    align-items: center;
+  }
+  .p3r-mail-phone-wrap {
+    width: 90vw;
+    height: min(calc(100dvh - 7.5rem), 620px);
+    transform-origin: center center;
+  }
+  .p3r-mail-phone-card { padding: 18px 20px 20px 16px; }
+  .p3r-mail-header-row { height: 56px; margin-bottom: 6px; }
+  .p3r-mail-watermark { font-size: clamp(3.4rem, 15vw, 4.8rem); }
+  .p3r-mail-list-container {
+    gap: 10px;
+    padding-right: 10px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+  .p3r-mail-list-container::-webkit-scrollbar { display: none; }
+  .p3r-mail-row { height: clamp(62px, 10dvh, 78px); flex-shrink: 0; }
+  .p3r-mail-icon-block { width: 76px; }
+  .p3r-mail-icon-block svg { width: 28px; height: 28px; }
+  .p3r-mail-content-block { padding: 6px 12px 6px 8px; }
+  .p3r-mail-sender-row { font-size: .85rem; gap: 6px; }
+  .p3r-mail-row-line { margin: 5px 0 4px 0; }
+  .p3r-mail-msg-text { font-size: 1rem; }
+  .p3r-mail-row:hover,
+  .p3r-mail-row.active { transform: translateX(3px); }
+  .p3r-contact-bottom-hud {
+    left: 4vw;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Modal */
+  .modal-card { width: 94vw; max-width: 94vw; max-height: 88dvh; }
+  .modal-header { padding: .9rem 1.1rem; }
+  .modal-title { font-size: 1.5rem; }
+  .modal-tag { font-size: .8rem; }
+  .modal-close-btn { width: 2.2rem; height: 2.2rem; flex-shrink: 0; }
+  .modal-body { padding: 1.25rem; }
+  .modal-content-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .modal-footer { padding: .8rem 1.1rem; }
+}
+
+/* Potret (HP berdiri): video menutupi seluruh layar */
+@media (max-width: 1023px) and (orientation: portrait) {
+  .background-video {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    object-fit: cover;
+    object-position: 28% bottom;
+  }
+}
+
+/* HP kecil */
 @media (max-width: 600px) {
-  .menu-column { left: .25rem; transform: translateY(-50%) scale(.55); }
-  .profile-name-text { font-size: 2rem; }
-  .p3r-banner-title { font-size: clamp(2.2rem, 12vw, 4rem) !important; }
-  .p3r-about-card { width: calc(100vw - 1rem); margin: .5rem; padding: 1rem; }
-  .p3r-mail-phone-wrap { transform: scale(.58); }
-  .buttons-row { gap: .5rem; }
-  .control-text { font-size: .7rem; }
+  .menu-column { left: .25rem; transform: translateY(-50%) scale(.56); }
+  .menu-profile-header { right: .75rem; }
+  .p3r-geometric-header { height: 68px; }
+  .p3r-banner-title { font-size: clamp(2.2rem, 12vw, 3.2rem) !important; }
+  .card-title-text { font-size: .95rem; }
+  .p3r-about-top-row { flex-wrap: nowrap; }
+  .buttons-row { gap: .6rem; }
+  .control-text { font-size: .85rem; }
+}
+
+/* HP sangat kecil */
+@media (max-width: 380px) {
+  .menu-column { transform: translateY(-50%) scale(.5); }
+  .p3r-stat-name-col { width: 34vw; }
+  .p3r-mail-icon-block { width: 62px; }
+  .p3r-mail-msg-text { font-size: .9rem; }
+}
+
+/* HP posisi landscape (tinggi pendek) */
+@media (max-width: 1023px) and (max-height: 500px) {
+  .menu-column { top: 52%; transform: translateY(-50%) scale(.46); left: 1.5rem; }
+  .menu-profile-header { top: .5rem; right: 1rem; }
+  .profile-name-text { font-size: 1.3rem; }
+  .p3r-geometric-header { height: 56px; margin-bottom: 10px; }
+  .p3r-banner-title { font-size: 2rem !important; }
+  .slink-profile-header { margin-bottom: .6rem; }
+  .slink-cards-container { --card-height: 54px; --card-gap: 8px; }
+  .slink-card { width: 70vw; }
+  .slink-card.active { width: 72vw !important; }
+  .p3r-skills-container { width: 80vw; }
+  .p3r-about-card { width: 80vw; }
+  .p3r-mail-phone-wrap { width: 70vw; height: calc(100dvh - 3.5rem); }
+  .p3r-mail-watermark { font-size: 3rem; }
+  .p3r-mail-header-row { height: 40px; }
+  .p3r-mail-row { height: 54px; }
 }
